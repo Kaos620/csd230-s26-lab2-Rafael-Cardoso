@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Bookstore Inventory</title></head>
+<body>
+<h1>Book List</h1>
+<p><a th:href="@{/cart}">[ 🛒 View My Cart ]</a></p>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Current Issue</th>
+        <th>Order Quantity</th>
+        <th>Price</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="magazine : ${magazines}">
+        <td th:text="${magazine.title}"></td>
+        <td th:text="${magazine.currentIssue}"></td>
+        <td th:text="${magazine.orderQty}"></td>
+        <td th:text="${magazine.price}"></td>
+        <td>
+            <a th:href="@{/magazines/edit/{id}(id=${magazine.id})}">Edit</a> |
+            <a th:href="@{/magazines/delete/{id}(id=${magazine.id})}" onclick="return confirm('Delete?')">Delete</a> |
+            <strong><a th:href="@{/cart/add/{id}(id=${magazine.id})}">Add to Cart</a></strong>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<br/>
+<a th:href="@{/magazines/add}">Add New Magazine</a>
+</body>
+</html>
+
+
+

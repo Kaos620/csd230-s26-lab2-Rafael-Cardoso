@@ -1,22 +1,27 @@
 package csd230.s26.lab1.controllers;
 
-import csd230.s26.lab1.entities.CartEntity;
-import csd230.s26.lab1.entities.ProductEntity;
+import csd230.s26.lab1.entities.*;
 import csd230.s26.lab1.repositories.CartRepository;
+import csd230.s26.lab1.repositories.OrderRepository;
 import csd230.s26.lab1.repositories.ProductRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping("/cart")
 public class CartController {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
+    private final OrderRepository orderRepository;
 
-    public CartController(CartRepository cartRepository, ProductRepository productRepository) {
+    public CartController(CartRepository cartRepository, ProductRepository productRepository, OrderRepository orderRepository) {
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
+        this.orderRepository = orderRepository;
     }
 
     // 1. VIEW CART
@@ -58,6 +63,51 @@ public class CartController {
             cart.getProducts().remove(product);
             cartRepository.save(cart);
         }
+        return "redirect:/cart";
+    }
+
+    @Transactional
+    @PostMapping("/checkout")
+    public String checkout(Model model) {
+        Long defaultCartId = 1L;
+        CartEntity cart = cartRepository.findById(defaultCartId).orElse(null);
+
+        if (cart != null && cart.getProducts() != null && !cart.getProducts().isEmpty()) {
+            OrderEntity order = new OrderEntity();
+            order.setOrderDate(LocalDateTime.now());
+
+            double totalAmount = 0.0;
+
+            for (ProductEntity product : cart.getProducts()) {
+                if (product != null) {
+                    totalAmount += product.getPrice();
+
+                    if (product instanceof BookEntity || product instanceof MagazineEntity) {
+                        if (product instanceof BookEntity) {
+                            BookEntity book = (BookEntity) product;
+                            book.setCopies(book.getCopies() - 1);
+                        } else {
+                            MagazineEntity magazine = (MagazineEntity) product;
+                            magazine.setCopies(magazine.getOrderQty() - 1);
+                        }
+                        productRepository.save(product);
+                    }
+
+                    order.getOrders().add(product);
+                }
+            }
+
+            order.setTotalAmount(totalAmount);
+            cart.getProducts().clear();
+
+            orderRepository.save(order);
+            cartRepository.save(cart);
+
+            model.addAttribute("order", order);
+
+            return "orderDetails";
+        }
+
         return "redirect:/cart";
     }
 }

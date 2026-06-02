@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Add Magazine</title></head>
+<body>
+<h1>Add New Magazine</h1>
+<form th:action="@{/magazines/add}" th:object="${magazine}" method="post">
+    <!-- CRITICAL: This line preserves the ID during the edit -->
+    <input type="hidden" th:field="*{id}" />
+    <label>Title: <input type="text" th:field="*{title}" required /></label><br/>
+    <label>Current Issue: <input type="text" th:field="*{currentIssue}" required /></label><br/>
+    <label>Order Quantity: <input type="text" th:field="*{orderQty}" required /></label><br/>
+    <label>Price: <input type="number" step="0.01" th:field="*{price}" required /></label><br/>
+    <label>Copies: <input type="number" th:field="*{copies}" required /></label><br/>
+    <button type="submit">Save Magazine</button>
+</form>
+<a th:href="@{/magazines}">Back to List</a>
+</body>
+</html>

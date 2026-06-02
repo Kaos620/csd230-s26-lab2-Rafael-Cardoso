@@ -32,6 +32,11 @@
     </tbody>
 </table>
 <br/>
+<form th:action="@{/cart/checkout}" method="post" style="display:inline;">
+    <button type="submit" class="btn-link" style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer; font-size:inherit; padding:0;">
+        Checkout
+    </button>
+</form>
 <a th:href="@{/books}">Back to Store</a>
 </body>
 </html>

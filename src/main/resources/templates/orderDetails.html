@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Your Order Details</title>
+</head>
+<body>
+<h1>Your Order Details</h1>
+
+<div th:if="${order == null}">
+    <p>No order details found. <a th:href="@{/books}">Go shopping!</a></p>
+</div>
+
+<div th:if="${order != null}">
+    <h3>Order ID: <span th:text="${order.id}"></span></h3>
+    <h3>Order Date: <span th:text="${#temporals.format(order.orderDate, 'yyyy-MM-dd HH:mm')}"></span></h3>
+    <h3>Total Amount Paid: <span th:text="${'$' + #numbers.formatDecimal(order.totalAmount, 1, 2)}"></span></h3>
+
+    <h2>Items Purchased</h2>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Item Name / Description</th>
+            <th>Type</th>
+            <th>Price</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${order.orders}">
+            <td>
+                <span th:if="${product instanceof T(csd230.s26.lab1.entities.PublicationEntity)}"
+                      th:text="${product.title}"></span>
+                <span th:if="${product instanceof T(csd230.s26.lab1.entities.TicketEntity)}"
+                      th:text="${product.description}"></span>
+            </td>
+            <td th:text="${product.productType}"></td>
+            <td th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<br/>
+<a th:href="@{/books}">Back to Store</a>
+</body>
+</html>
